@@ -6,3 +6,4 @@
 *.elf
 *.bin
 *.d
+*.map
