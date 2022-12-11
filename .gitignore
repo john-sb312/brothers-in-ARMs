@@ -5,3 +5,4 @@
 *.hex*.o
 *.elf
 *.bin
+*.d

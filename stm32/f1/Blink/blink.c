@@ -2,9 +2,10 @@
 #include <libopencm3/stm32/f1/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 
-static void delay( void ) {
-   
-   int i = 72e6 /2 /4;
+static void my_delay_1( void )
+{
+   int i = 72e6/2/16;
+
    while( i > 0 )
      {
         i--;
@@ -12,11 +13,24 @@ static void delay( void ) {
      }
 }
 
+int main( void )
+{
+   //set STM32 to 72 MHz
+   rcc_clock_setup_in_hse_8mhz_out_72mhz();
+   // rcc_clock_setup_pll(&rcc_hse_configs[RCC_CLOCK_HSE8_72MHZ]);
+   // Enable GPIOC clock
+   rcc_periph_clock_enable( RCC_GPIOC );
+   //Set GPIO13 (inbuild led connected) to 'output push-pull'
+   //Manually:
+   // GPIOC_CRH = (GPIO_CNF_OUTPUT_PUSHPULL << (((12 - 8) * 4) + 3));
+   // GPIOC_CRH |= (GPIO_MODE_OUTPUT_2_MHZ << ((12 - 8) * 4));
+   /* Using API functions: */
+   gpio_set_mode( GPIOC, GPIO_MODE_OUTPUT_2_MHZ,
+                  GPIO_CNF_OUTPUT_PUSHPULL, GPIO13 );
 
-int main(){
-    rcc_clock_setup_in_hse_8mhz_out_72mhz();
-    // set this thing to 72MHz
-
-    gpio_set_mode(uint32_t gpioport, uint8_t mode, uint8_t cnf,
-		   uint16_t gpios)
+   while( 1 )
+     {
+        gpio_toggle( GPIOC, GPIO13 );
+        my_delay_1();
+     }
 }
